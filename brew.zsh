@@ -9,7 +9,8 @@
 (( $+commands[brew] )) || return
 [[ $(git -C $(brew --prefix)/Homebrew rev-parse --abbrev-ref HEAD) == "stable" ]] || return
 #if type brew &>/dev/null; then fpath=$(brew --prefix)/Homebrew/completions/zsh:$fpath; fi
-alias b='brew'
+if alias b &>/dev/null; then unalias b && alias b='brew'; else alias b='brew'; fi
+export PATH="$(brew --prefix)/sbin:$PATH"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_INSECURE_REDIRECT=1
 export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts --require-sha"
@@ -72,10 +73,11 @@ cask-clean() {
 }
 
 brew-it() {
-    brew doctor && brew missing && brew update && brew upgrade && brew cleanup --prune=3 -s && brew services cleanup
-    brew cask doctor 2>&1 | egrep -i '(error|warning):'
+    brew missing && brew update && brew upgrade && brew cleanup --prune=3 -s && brew services cleanup
     cask-upgrade
     cask-clean
+    (brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):'
+    (( $? )) || echo "run 'brew doctor' or 'brew cask doctor' for details"
 }
 
 brew-init() {
