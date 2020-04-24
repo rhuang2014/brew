@@ -73,11 +73,11 @@ cask-clean() {
 }
 
 brew-it() {
-    brew missing && brew update && brew upgrade && brew cleanup --prune=3 -s && brew services cleanup
+    brew update && brew upgrade && brew cleanup --prune=3 -s && brew services cleanup
     cask-upgrade
     cask-clean
-    (brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):'
-    (( $? )) || echo "run 'brew doctor' or 'brew cask doctor' for details"
+    (brew missing 2>&1; brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):'
+    (( $? )) || echo "run 'brew missing', 'brew doctor' and 'brew cask doctor' for details"
 }
 
 brew-init() {
