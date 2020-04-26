@@ -7,10 +7,9 @@
 # url: https://github.com/rhuang/zsh-brew
 
 (( $+commands[brew] )) || return
-[[ $(git -C $(brew --prefix)/Homebrew rev-parse --abbrev-ref HEAD) == "stable" ]] || return
-#if type brew &>/dev/null; then fpath=$(brew --prefix)/Homebrew/completions/zsh:$fpath; fi
 if alias b &>/dev/null; then unalias b && alias b='brew'; else alias b='brew'; fi
 export PATH="$(brew --prefix)/sbin:$PATH"
+export HOMEBREW_EDITOR=vim
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_INSECURE_REDIRECT=1
 export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts --require-sha"
@@ -28,6 +27,7 @@ __cask-upgrade() {
     local currentVersion
     local cask="$1"
     local caskDirectory="${caskBasePath}/${cask}"
+    [[ -n ${cask} ]] || return
     currentVersion=$(/bin/ls -t $caskDirectory | head -1)
     newVersion=$(brew cask info ${cask} | grep "^${cask}:" | awk '{print $2}')
     if [[ ${newVersion} != ${currentVersion} ]]; then
@@ -73,10 +73,10 @@ cask-clean() {
 }
 
 brew-it() {
-    brew update && brew upgrade && brew cleanup --prune=3 -s && brew services cleanup
+    brew update && brew upgrade 2>/dev//null && brew cleanup --prune=3 -s && brew services cleanup
     cask-upgrade
     cask-clean
-    (brew missing 2>&1; brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):'
+    (brew missing 2>&1; brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):' | egrep -v 'macOS 10.10|Unknown support status'
     (( $? )) || echo "run 'brew missing', 'brew doctor' and 'brew cask doctor' for details"
 }
 
