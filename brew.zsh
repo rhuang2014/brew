@@ -7,6 +7,7 @@
 # url: https://github.com/rhuang/zsh-brew
 
 (( $+commands[brew] )) || return
+(( $+commands[pyenv] )) && alias brew='env PATH=${PATH//$(pyenv root)\/shims:/} brew'
 if alias b &>/dev/null; then unalias b && alias b='brew'; else alias b='brew'; fi
 export PATH="$(brew --prefix)/sbin:$PATH"
 export HOMEBREW_EDITOR=vim
@@ -76,10 +77,10 @@ brew-it() {
     brew update && brew upgrade 2>/dev//null && brew cleanup --prune=3 -s && brew services cleanup
     cask-upgrade
     cask-clean
-    (brew missing 2>&1; brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):' | egrep -v 'macOS 10.10|Unknown support status'
+    (brew missing 2>&1; PATH=${PATH//$(pyenv root)\/shims:/} brew doctor 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):' | egrep -v 'macOS 10.10|Unknown support status'
     (( $? )) || echo "run 'brew missing', 'brew doctor' and 'brew cask doctor' for details"
 }
 
 brew-init() {
-    brew doctor && brew fetch git tree vim zsh --deps && brew install git tree vim zsh --verbose
+    PATH=${PATH//$(pyenv root)\/shims:/} brew doctor && brew fetch git tree vim zsh --deps && brew install git tree vim zsh --verbose
 }
