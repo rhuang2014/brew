@@ -57,7 +57,7 @@ cask-upgrade() {
     if (( ${#@} == 0 )); then
         while read cask; do
             __cask-upgrade "$cask"
-        done <<< "$(brew cask list)"
+        done <<< "$(brew list --cask)"
     else
         __cask-upgrade "$1"
     fi
@@ -67,7 +67,7 @@ cask-clean() {
     if (( ${#@} < 1 )); then
         while read cask; do
             __clean-cask "$cask"
-        done <<< "$(brew cask list)"
+        done <<< "$(brew list --cask)"
     else
         __clean-cask "$1"
     fi
