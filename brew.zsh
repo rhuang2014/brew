@@ -77,8 +77,8 @@ brew-it() {
     brew update && brew upgrade 2>/dev//null && brew cleanup --prune=3 -s && brew services cleanup
     cask-upgrade
     cask-clean
-    (brew missing 2>&1; PATH=${PATH//$(pyenv root)\/shims:/} brew doctor --verbose 2>&1; brew cask doctor 2>&1) | egrep -i '(error|warning):' | egrep -v 'macOS 10.10|Unknown support status'
-    (( $? )) || echo "run 'brew missing', 'brew doctor --verbose' and 'brew cask doctor' for details"
+    (brew missing 2>&1; PATH=${PATH//$(pyenv root)\/shims:/} brew doctor --verbose 2>&1) | egrep -i '(error|warning):' | egrep -v 'macOS 10.10|Unknown support status'
+    (( $? )) || echo "run 'brew missing', 'brew doctor --verbose' for details"
 }
 
 brew-init() {
